@@ -12,13 +12,7 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Populate the database
-using (var scope = app.Services.CreateScope())
-{
-	var services = scope.ServiceProvider;
 
-	SeedData.Initialize(services);
-}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -46,6 +40,13 @@ using (var scope = app.Services.CreateScope())
 {
 	var db = scope.ServiceProvider.GetRequiredService<Garage_2Context>();
 	db.Database.Migrate();
+}
+// Populate the database
+using (var scope = app.Services.CreateScope())
+{
+	var services = scope.ServiceProvider;
+
+	SeedData.Initialize(services);
 }
 
 app.Run();
