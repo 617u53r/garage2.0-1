@@ -15,17 +15,24 @@ jobs:
     
 
     steps:
+    # Step 1: Checkout code
     - uses: actions/checkout@v4
+    
+    # Step 2: Setup .NET
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
+    # Step 3: Restore dependencies
     - name: Restore dependencies
-      run: dotnet restore
-      working-directory: /Garage-2
+      run: dotnet restore Garage-2/Garage-2.slnx
+      
+    # Step 4: Build project
     - name: Build
-      run: dotnet build --no-restore
-      working-directory: /Garage-2
+      run: dotnet build Garage-2/Garage-2.slnx --no-restore
+      
+    # Step 5: Run tests
     - name: Test
-      run: dotnet test --no-build --verbosity normal
-      working-directory: /Garage-2
+      run: dotnet test Garage-2/Garage-2.slnx --no-build --verbosity normal
+
