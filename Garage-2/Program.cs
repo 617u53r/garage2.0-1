@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Garage_2.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<Garage_2Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Garage_2Context") ?? throw new InvalidOperationException("Connection string 'Garage_2Context' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -22,7 +27,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=ParkedVehicles}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 
