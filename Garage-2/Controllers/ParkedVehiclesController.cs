@@ -111,43 +111,63 @@ namespace Garage_2.Controllers
             return View(parkedVehicle);
         }
 
-        // POST: ParkedVehicles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,LicensePlate,Color,Manufacturer,Model,NumberOfWheels,CheckInTime,CheckOutTime")] ParkedVehicle parkedVehicle)
-        {
-            if (id != parkedVehicle.Id)
-            {
-                return NotFound();
-            }
+		// POST: ParkedVehicles/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,LicensePlate,Color,Manufacturer,Model,NumberOfWheels")] ParkedVehicle parkedVehicle)
+		{
+			if (id != parkedVehicle.Id)
+			{
+				return NotFound();
+			}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(parkedVehicle);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ParkedVehicleExists(parkedVehicle.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(parkedVehicle);
-        }
+			// Retrieve the existing vehicle from the database
+			var dbVehicle = await _context.ParkedVehicle.FindAsync(id);
 
-        // GET: ParkedVehicles/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+			if (dbVehicle == null)
+				return NotFound();
+
+			// Does the licence plate already exist on another vehicle?
+			bool licenseExists = await _context.ParkedVehicle.AnyAsync(v => v.LicensePlate == parkedVehicle.LicensePlate && v.Id != parkedVehicle.Id);
+
+			if (licenseExists)
+			{
+				// set the model state to invalid
+				ModelState.AddModelError(nameof(ParkedVehicle.LicensePlate), "A vehicle with this license plate already exists.");
+			}
+
+			if (!ModelState.IsValid)
+			{
+				return View(parkedVehicle);
+			}
+
+			try
+			{
+				// Update all fields except CheckInTime and CheckOutTime
+				dbVehicle.VehicleType = parkedVehicle.VehicleType;
+				dbVehicle.LicensePlate = parkedVehicle.LicensePlate;
+				dbVehicle.Color = parkedVehicle.Color;
+				dbVehicle.Manufacturer = parkedVehicle.Manufacturer;
+				dbVehicle.Model = parkedVehicle.Model;
+				dbVehicle.NumberOfWheels = parkedVehicle.NumberOfWheels;
+
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!ParkedVehicleExists(parkedVehicle.Id))
+				{
+					return NotFound();
+				}
+				throw;
+			}
+			return RedirectToAction(nameof(Index));
+		}
+
+		// GET: ParkedVehicles/Delete/5
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
