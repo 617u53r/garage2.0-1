@@ -243,5 +243,29 @@ namespace Garage_2.Controllers
         {
             return _context.ParkedVehicle.Any(e => e.Id == id);
         }
-    }
+
+
+
+		public async Task<IActionResult> Search(string? licensePlate)
+		{
+			var vehicles = _context.ParkedVehicle.AsQueryable();
+
+			if (!string.IsNullOrWhiteSpace(licensePlate))
+			{
+				vehicles = vehicles.Where(v =>
+					v.LicensePlate.Contains(licensePlate));
+			}
+
+			return View(await vehicles.ToListAsync());
+		}
+
+
+
+
+
+
+
+
+
+	}
 }
