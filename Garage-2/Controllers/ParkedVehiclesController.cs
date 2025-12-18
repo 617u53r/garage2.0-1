@@ -68,6 +68,10 @@ namespace Garage_2.Controllers
                 Price = price
             };
 
+            // REMOVE after checkout
+            _context.ParkedVehicle.Remove(vehicle);
+            await _context.SaveChangesAsync();
+
             return View(vm);
         }
 
