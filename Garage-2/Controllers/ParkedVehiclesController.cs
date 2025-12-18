@@ -25,8 +25,9 @@ namespace Garage_2.Controllers
 		// GET: ParkedVehicles
 		public async Task<IActionResult> Index()
         {
-            return View(await _context.ParkedVehicle.ToListAsync());
-        }
+			//return View(await _context.ParkedVehicle.ToListAsync());
+			return View(await _context.ParkedVehicle.Where(v => v.CheckOutTime == null).ToListAsync());
+		}
 
         // GET: ParkedVehicles/Details/5
         public async Task<IActionResult> Details(int? id)
