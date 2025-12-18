@@ -1,0 +1,36 @@
+﻿@using Garage_2.Models.ViewModels
+@model ReceiptViewModel
+
+
+<h1>Receipt</h1>
+
+<div  class="receipt-card">
+    <hr/>
+
+    <dl class="receipt-list">
+        <dt>Registration number</dt>
+        <dd>@Model.RegistrationNumber</dd>
+
+        <dt>Vehicle type</dt>
+        <dd>@Model.VehicleType</dd>
+
+        <dt>Check-in time</dt>
+        <dd>@Model.CheckInTime</dd>
+
+        <dt>Check-out time</dt>
+        <dd>@Model.CheckOutTime</dd>
+
+        <dt>Total parked time</dt>
+        <dd>@Model.TotalParkedTime</dd>
+
+        <dt>Total fee</dt>
+        <dd>@Model.Price</dd>
+
+    </dl>
+    <div class="receipt-actions">
+        <button onclick="window.print()" class="btn primary">Print</button>
+        <a asp-action="Index" class="btn secondary">Back to garage</a>
+    </div>
+
+</div>
+
