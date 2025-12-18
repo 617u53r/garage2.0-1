@@ -167,39 +167,78 @@ namespace Garage_2.Controllers
 		}
 
 		// GET: ParkedVehicles/Delete/5
+		// GET: ParkedVehicles/Delete/5
 		public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            var parkedVehicle = await _context.ParkedVehicle
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (parkedVehicle == null)
-            {
-                return NotFound();
-            }
+			var parkedVehicle = await _context.ParkedVehicle
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (parkedVehicle == null)
+			{
+				return NotFound();
+			}
+			var vm = new CheckOutViewModel
+			{
+				Vehicle = parkedVehicle
+			};
 
-            return View(parkedVehicle);
-        }
+			return View(vm);
+		}
 
-        // POST: ParkedVehicles/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
-            if (parkedVehicle != null)
-            {
-                _context.ParkedVehicle.Remove(parkedVehicle);
-            }
+		// POST: ParkedVehicles/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+			if (parkedVehicle == null)
+				return NotFound();
 
-        private bool ParkedVehicleExists(int id)
+
+			var vm = new CheckOutViewModel
+			{
+				Vehicle = parkedVehicle
+			};
+
+
+			// check if the vehicle is already checked out
+			if (parkedVehicle.CheckOutTime != null)
+			{
+				ModelState.AddModelError("", "Vehicle is already checked out.");
+				return View(vm);
+			}
+
+			// set the CheckOutTime to local time
+			parkedVehicle.CheckOutTime = DateTime.Now;
+
+			var duration = parkedVehicle.CheckOutTime.Value - parkedVehicle.CheckInTime;
+
+			int h = duration.Hours;
+			int m = duration.Minutes;
+
+			if (h > 0)
+			{
+				vm.Message = $"Vehicle checked out. Duration: {duration.Hours} hours and {duration.Minutes} minutes.";
+			}
+			else
+			{
+				vm.Message = $"Vehicle checked out. Duration: {duration.Minutes} minutes.";
+			}
+
+
+			await _context.SaveChangesAsync();
+
+			return View(vm);
+
+		}
+
+
+		private bool ParkedVehicleExists(int id)
         {
             return _context.ParkedVehicle.Any(e => e.Id == id);
         }
