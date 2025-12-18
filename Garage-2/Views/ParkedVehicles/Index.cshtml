@@ -4,11 +4,18 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success alert-dismissible fade show slow-fade"
+         role="alert"
+         id="successAlert">
+        @msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>Parked Vehicles</h1>
+
 <table class="table">
     <thead>
         <tr>
@@ -74,3 +81,30 @@
 }
     </tbody>
 </table>
+@section Scripts {
+    <script>
+        console.log("Index Scripts section loaded");
+
+        window.addEventListener("load", function () {
+            console.log("Window loaded - starting timer");
+
+            setTimeout(function () {
+                const el = document.getElementById("successAlert");
+                console.log("Alert element:", el);
+
+                if (!el) return;
+
+                // Bootstrap 5 API
+                if (window.bootstrap && window.bootstrap.Alert) {
+                    console.log("Closing via Bootstrap API");
+                    window.bootstrap.Alert.getOrCreateInstance(el).close();
+                } else {
+                    console.log("Bootstrap API missing - fallback close");
+                    el.classList.remove("show");
+                    setTimeout(() => el.remove(), 300);
+                }
+            }, 2000);
+        });
+    </script>
+}
+

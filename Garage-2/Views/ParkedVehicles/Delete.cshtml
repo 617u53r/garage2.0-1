@@ -1,0 +1,64 @@
+﻿@model Garage_2.ViewModels.CheckOutViewModel
+
+@{
+    ViewData["Title"] = "Vehicle checkout";
+    bool isCheckedOut = Model.Vehicle.CheckOutTime != null;
+}
+
+
+<h1>Vehicle checkout</h1>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-success">
+        @Model.Message
+    </div>
+}
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Vehicle.VehicleType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Vehicle.VehicleType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Vehicle.LicensePlate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Vehicle.LicensePlate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Vehicle.CheckInTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Vehicle.CheckInTime)
+        </dd>
+    </dl>
+
+    @if (!isCheckedOut)
+    {
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Vehicle.Id" />
+
+            <button type="submit" class="btn btn-danger">
+                Check out
+            </button>
+        </form>
+    }
+    else
+    {
+        <a asp-action="Receipt"
+           asp-route-id="@Model.Vehicle.Id"
+           class="btn btn-primary">
+            Print receipt
+        </a>
+    }
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+</div>

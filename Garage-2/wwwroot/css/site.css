@@ -29,3 +29,13 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* slow fade for alerts*/
+.alert.slow-fade {
+    transition: opacity 1.5s ease, transform 1.5s ease;
+}
+
+    .alert.slow-fade.fade:not(.show) {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
