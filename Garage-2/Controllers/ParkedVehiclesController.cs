@@ -1,9 +1,8 @@
 ﻿using Garage_2.Data;
 using Garage_2.Models;
-using Garage_2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Garage_2.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +27,24 @@ namespace Garage_2.Controllers
 			//return View(await _context.ParkedVehicle.ToListAsync());
 			return View(await _context.ParkedVehicle.Where(v => v.CheckOutTime == null).ToListAsync());
 		}
+
+        // GET: ParkedVehicles/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var parkedVehicle = await _context.ParkedVehicle
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (parkedVehicle == null)
+            {
+                return NotFound();
+            }
+
+            return View(parkedVehicle);
+        }
 
         // GET: ParkedVehicles/Receipt/5
         public async Task<IActionResult> Receipt(int? id)

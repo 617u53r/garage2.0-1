@@ -1,4 +1,4 @@
-﻿namespace Garage_2.Models.ViewModels
+﻿namespace Garage_2.ViewModels
 {
     public class ReceiptViewModel
     {
