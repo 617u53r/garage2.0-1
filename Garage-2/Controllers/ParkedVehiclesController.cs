@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Garage_2.Data;
+using Garage_2.Models;
+using Garage_2.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Garage_2.Data;
-using Garage_2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Garage_2.Controllers
 {
@@ -46,26 +47,53 @@ namespace Garage_2.Controllers
         }
 
         // GET: ParkedVehicles/Create
+        [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new ParkedVehicleCreateVm());
         }
+
 
         // POST: ParkedVehicles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,LicensePlate,Color,Manufacturer,Model,NumberOfWheels,CheckInTime,CheckOutTime")] ParkedVehicle parkedVehicle)
+        
+        public async Task<IActionResult> Create(ParkedVehicleCreateVm vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var reg = vm.RegNr.Trim().ToUpperInvariant();
+
+            if (await _context.ParkedVehicle.AnyAsync(v => v.LicensePlate == reg))
             {
-                _context.Add(parkedVehicle);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError(nameof(vm.RegNr), "Registration number is already used.");
+                return View(vm);
             }
-            return View(parkedVehicle);
+
+            var vehicle = new ParkedVehicle
+            {
+                VehicleType = vm.Type,
+                LicensePlate = reg,
+                Color = vm.Color.Trim(),
+                Manufacturer = vm.Brand.Trim(),
+                Model = vm.Model.Trim(),
+                NumberOfWheels = vm.Wheels,
+                CheckInTime = DateTime.Now, 
+                CheckOutTime = null
+            };
+
+            _context.ParkedVehicle.Add(vehicle);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = $"Vehicle {vehicle.LicensePlate} Parked successfully.";
+            return RedirectToAction(nameof(Index));
+
+
         }
+
 
         // GET: ParkedVehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)

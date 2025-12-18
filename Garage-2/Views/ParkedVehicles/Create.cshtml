@@ -1,4 +1,4 @@
-﻿@model Garage_2.Models.ParkedVehicle
+﻿@model Garage_2.ViewModels.ParkedVehicleCreateVm
 @using Garage_2.Models
 
 <div class="container mt-4">
@@ -13,18 +13,18 @@
                 <!-- Row 1 -->
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label asp-for="VehicleType" class="form-label">Vehicle Type</label>
-                        <select asp-for="VehicleType"
+                        <label asp-for="Type" class="form-label">Vehicle Type</label>
+                        <select asp-for="Type"
                                 asp-items="Html.GetEnumSelectList<VehicleType>()"
                                 class="form-select">
                         </select>
-                        <span asp-validation-for="VehicleType" class="text-danger"></span>
+                        <span asp-validation-for="Type" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label asp-for="LicensePlate" class="form-label">License Plate</label>
-                        <input asp-for="LicensePlate" class="form-control" />
-                        <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                        <label asp-for="RegNr" class="form-label">License Plate</label>
+                        <input asp-for="RegNr" class="form-control" />
+                        <span asp-validation-for="RegNr" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-4 mb-3">
@@ -37,9 +37,9 @@
                 <!-- Row 2 -->
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label asp-for="Manufacturer" class="form-label">Manufacturer</label>
-                        <input asp-for="Manufacturer" class="form-control" />
-                        <span asp-validation-for="Manufacturer" class="text-danger"></span>
+                        <label asp-for="Brand" class="form-label">Manufacturer</label>
+                        <input asp-for="Brand" class="form-control" />
+                        <span asp-validation-for="Brand" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-4 mb-3">
@@ -49,20 +49,22 @@
                     </div>
 
                     <div class="col-md-4 mb-4">
-                        <label asp-for="NumberOfWheels" class="form-label">Number of Wheels</label>
-                        <input asp-for="NumberOfWheels" type="number" min="1" class="form-control" />
-                        <span asp-validation-for="NumberOfWheels" class="text-danger"></span>
+                        <label asp-for="Wheels" class="form-label">Number of Wheels</label>
+                        <input asp-for="Wheels" type="number" min="1" class="form-control" />
+                        <span asp-validation-for="Wheels" class="text-danger"></span>
                     </div>
                 </div>
 
-                <!-- Buttons -->
                 <div class="d-flex justify-content-between mt-3">
-                    <button type="submit" class="btn btn-primary">
-                        Park Vehicle
-                    </button>
-
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        Cancel
-                    </a>
+                    <button type="submit" class="btn btn-primary">Park Vehicle</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
