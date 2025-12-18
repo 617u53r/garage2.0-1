@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Garage_2.Data;
+using Garage_2.Models;
+using Garage_2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Garage_2.Data;
-using Garage_2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Garage_2.Controllers
 {
@@ -27,22 +28,53 @@ namespace Garage_2.Controllers
             return View(await _context.ParkedVehicle.ToListAsync());
         }
 
-        // GET: ParkedVehicles/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: ParkedVehicles/Receipt/5
+        public async Task<IActionResult> Receipt(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var parkedVehicle = await _context.ParkedVehicle
+            var vehicle = await _context.ParkedVehicle
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (parkedVehicle == null)
+            if (vehicle == null)
             {
                 return NotFound();
             }
+            var checkOutTime = DateTime.Now; // set at checkout
+            vehicle.CheckOutTime = checkOutTime;
+            // Calculate total parked time
+            var totalTime = checkOutTime - vehicle.CheckInTime;
 
-            return View(parkedVehicle);
+            // Round total hours to nearest half-hour
+            var totalHours = totalTime.TotalHours;
+            var roundedHours = Math.Round(totalHours * 2, MidpointRounding.AwayFromZero) / 2; // nearest 0.5 hr
+
+            // Calculate price based on rounded hours
+            var price = CalculatePriceFromHours(roundedHours);
+
+            var vm = new ReceiptViewModel
+            {
+                RegistrationNumber = vehicle.LicensePlate,
+                VehicleType = vehicle.VehicleType.ToString(),
+                Color = vehicle.Color,
+                Manufacturer = vehicle.Manufacturer,
+                Model = vehicle.Model,
+                NumberOfWheels = vehicle.NumberOfWheels,
+                CheckInTime = vehicle.CheckInTime,
+                CheckOutTime = checkOutTime,
+                TotalParkedTime = TimeSpan.FromHours(roundedHours),
+                Price = price
+            };
+
+            return View(vm);
+        }
+
+        private decimal CalculatePriceFromHours(double hours)
+        {
+            decimal ratePerHour = 20m; // 20kr per hour
+            return (decimal)hours * ratePerHour;
         }
 
         // GET: ParkedVehicles/Create
