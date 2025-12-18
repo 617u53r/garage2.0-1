@@ -153,8 +153,9 @@ namespace Garage_2.Controllers
 				dbVehicle.Manufacturer = parkedVehicle.Manufacturer;
 				dbVehicle.Model = parkedVehicle.Model;
 				dbVehicle.NumberOfWheels = parkedVehicle.NumberOfWheels;
-
 				await _context.SaveChangesAsync();
+				TempData["Success"] = "Vehicle was successfully updated.";
+
 			}
 			catch (DbUpdateConcurrencyException)
 			{
