@@ -164,8 +164,9 @@ namespace Garage_2.Controllers
 				}
 				throw;
 			}
-			return RedirectToAction(nameof(Index));
-		}
+            TempData["Success"] = $"Vehicle {parkedVehicle.LicensePlate} edited successfully.";
+            return RedirectToAction(nameof(Index));
+        }
 
 		// GET: ParkedVehicles/Delete/5
 		// GET: ParkedVehicles/Delete/5
@@ -234,9 +235,10 @@ namespace Garage_2.Controllers
 
 			await _context.SaveChangesAsync();
 
-			return View(vm);
+            TempData["Success"] = $"Vehicle {parkedVehicle.LicensePlate} checked out successfully.";
+            return RedirectToAction(nameof(Index));
 
-		}
+        }
 
 
 		private bool ParkedVehicleExists(int id)
