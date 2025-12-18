@@ -17,11 +17,11 @@ public class ParkedVehicleCreateVm
     public string Color { get; set; } = "";
 
     [Required]
-    [StringLength(30)]
+    [StringLength(50)]
     public string Brand { get; set; } = "";
 
     [Required]
-    [StringLength(30)]
+    [StringLength(50)]
     public string Model { get; set; } = "";
 
     [Range(0, 18, ErrorMessage = "Number of weels can't be negative.")]
