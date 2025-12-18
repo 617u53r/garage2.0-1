@@ -25,8 +25,9 @@ namespace Garage_2.Controllers
 		// GET: ParkedVehicles
 		public async Task<IActionResult> Index()
         {
-            return View(await _context.ParkedVehicle.ToListAsync());
-        }
+			//return View(await _context.ParkedVehicle.ToListAsync());
+			return View(await _context.ParkedVehicle.Where(v => v.CheckOutTime == null).ToListAsync());
+		}
 
         // GET: ParkedVehicles/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -242,5 +243,29 @@ namespace Garage_2.Controllers
         {
             return _context.ParkedVehicle.Any(e => e.Id == id);
         }
-    }
+
+
+
+		public async Task<IActionResult> Search(string? licensePlate)
+		{
+			var vehicles = _context.ParkedVehicle.AsQueryable();
+
+			if (!string.IsNullOrWhiteSpace(licensePlate))
+			{
+				vehicles = vehicles.Where(v =>
+					v.LicensePlate.Contains(licensePlate));
+			}
+
+			return View(await vehicles.ToListAsync());
+		}
+
+
+
+
+
+
+
+
+
+	}
 }
