@@ -15,6 +15,23 @@
 }
 
 <h1>Parked Vehicles</h1>
+<p>
+
+    <form asp-action="Index" method="get">
+        <div class="input-group mb-3">
+            <input type="text"
+                   class="form-control"
+                   name="licensePlate"
+                   value="@Context.Request.Query["licensePlate"]"
+                   placeholder="Search for license plate" />
+            <button class="btn btn-outline-secondary" type="submit">
+                Search
+            </button>
+        </div>
+    </form>
+</p>
+
+
 
 <table class="table">
     <thead>
