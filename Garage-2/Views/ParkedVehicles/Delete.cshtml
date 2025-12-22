@@ -38,27 +38,31 @@
         </dd>
     </dl>
 
-    @if (!isCheckedOut)
-    {
-        <form asp-action="Delete" method="post">
-            <input type="hidden" asp-for="Vehicle.Id" />
+    <div class="d-flex align-items-center gap-3 mt-3">
 
-            <button type="submit" class="btn btn-danger">
-                Check out
-            </button>
-        </form>
-    }
-    else
-    {
-        <a asp-action="Receipt"
-           asp-route-id="@Model.Vehicle.Id"
-           class="btn btn-primary">
-            Print receipt
+        @if (!isCheckedOut)
+        {
+            <form asp-action="Delete" method="post" class="m-0">
+                <input type="hidden" asp-for="Vehicle.Id" />
+                <button type="submit" class="btn btn-danger">
+                    Check out
+                </button>
+            </form>
+        }
+        else
+        {
+            <a asp-action="Receipt"
+               asp-route-id="@Model.Vehicle.Id"
+               class="btn btn-primary">
+                Print receipt
+            </a>
+        }
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Back
         </a>
-    }
-
-    <div>
-        <a asp-action="Index">Back to List</a>
     </div>
+   
+
 
 </div>
