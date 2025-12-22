@@ -17,9 +17,6 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
-}
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
@@ -39,3 +36,9 @@ body {
         opacity: 0;
         transform: translateY(-6px);
     }
+
+
+.title {
+    color: #194a7a;
+    margin-bottom: 20px;
+}
