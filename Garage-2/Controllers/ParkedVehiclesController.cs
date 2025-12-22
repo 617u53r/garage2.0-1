@@ -39,9 +39,6 @@ namespace Garage_2.Controllers
 
 
 
-
-
-
 		// GET: ParkedVehicles/Details/5
 		public async Task<IActionResult> Details(int? id)
         {
@@ -70,17 +67,21 @@ namespace Garage_2.Controllers
 
             var vehicle = await _context.ParkedVehicle
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (vehicle == null)
             {
                 return NotFound();
             }
-            var checkOutTime = DateTime.Now; // set at checkout
-            vehicle.CheckOutTime = checkOutTime;
-            // Calculate total parked time
-            var totalTime = checkOutTime - vehicle.CheckInTime;
 
-            // Round total hours to nearest half-hour
-            var totalHours = totalTime.TotalHours;
+			if (vehicle.CheckOutTime == null) 
+				return NotFound();
+
+			//var checkOutTime = DateTime.Now; // set at checkout
+			// vehicle.CheckOutTime = checkOutTime;
+			// Calculate total parked time
+			var totalTime = vehicle.CheckOutTime.Value - vehicle.CheckInTime;
+			// Round total hours to nearest half-hour
+			var totalHours = totalTime.TotalHours;
             var roundedHours = Math.Round(totalHours * 2, MidpointRounding.AwayFromZero) / 2; // nearest 0.5 hr
 
             // Calculate price based on rounded hours
@@ -95,14 +96,14 @@ namespace Garage_2.Controllers
                 Model = vehicle.Model,
                 NumberOfWheels = vehicle.NumberOfWheels,
                 CheckInTime = vehicle.CheckInTime,
-                CheckOutTime = checkOutTime,
+                CheckOutTime = vehicle.CheckOutTime.Value,
                 TotalParkedTime = TimeSpan.FromHours(roundedHours),
                 Price = price
             };
 
             // REMOVE after checkout
-            _context.ParkedVehicle.Remove(vehicle);
-            await _context.SaveChangesAsync();
+           // _context.ParkedVehicle.Remove(vehicle);
+          //  await _context.SaveChangesAsync();
 
             return View(vm);
         }
@@ -302,8 +303,7 @@ namespace Garage_2.Controllers
 
 			await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Vehicle {parkedVehicle.LicensePlate} checked out successfully.";
-            return RedirectToAction(nameof(Index));
+            return View(vm);
 
         }
 
