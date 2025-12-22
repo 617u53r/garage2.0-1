@@ -21,15 +21,29 @@ namespace Garage_2.Controllers
 
 
 
-		// GET: ParkedVehicles
-		public async Task<IActionResult> Index()
-        {
-			//return View(await _context.ParkedVehicle.ToListAsync());
-			return View(await _context.ParkedVehicle.Where(v => v.CheckOutTime == null).ToListAsync());
+		public async Task<IActionResult> Index(string? licensePlate)
+		{
+			var vehicles = _context.ParkedVehicle
+				.Where(v => v.CheckOutTime == null);
+
+			if (!string.IsNullOrWhiteSpace(licensePlate))
+			{
+				licensePlate = licensePlate.Trim().ToUpper();
+
+				vehicles = vehicles.Where(v =>
+					v.LicensePlate.Contains(licensePlate));
+			}
+
+			return View(await vehicles.ToListAsync());
 		}
 
-        // GET: ParkedVehicles/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+
+
+
+
+		// GET: ParkedVehicles/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
