@@ -40,9 +40,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.CheckInTime)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CheckOutTime)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -69,9 +66,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CheckInTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CheckOutTime)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
