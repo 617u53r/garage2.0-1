@@ -31,7 +31,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=ParkedVehicles}/{action=Index}/{id?}")
+	pattern: "{controller=ParkedVehicles}/{action=Home}/{id?}")
 	.WithStaticAssets();
 
 // Create the database and apply migrations at startup

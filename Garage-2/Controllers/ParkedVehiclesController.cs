@@ -20,8 +20,10 @@ namespace Garage_2.Controllers
         }
 
 
-
-		public async Task<IActionResult> Index(string? licensePlate)
+		public async Task<IActionResult> Home() { 
+			return View();
+        }
+        public async Task<IActionResult> Index(string? licensePlate)
 		{
 			var vehicles = _context.ParkedVehicle
 				.Where(v => v.CheckOutTime == null);
