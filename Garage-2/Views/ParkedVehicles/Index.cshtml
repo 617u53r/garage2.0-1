@@ -14,53 +14,45 @@
     </div>
 }
 
-<h1>Parked Vehicles</h1>
-<p>
-
-    <form asp-action="Index" method="get">
-        <div class="input-group mb-3">
-            <input type="text"
-                   class="form-control"
-                   name="licensePlate"
-                   value="@Context.Request.Query["licensePlate"]"
-                   placeholder="Search for license plate" />
-            <button class="btn btn-outline-secondary" type="submit">
-                Search
-            </button>
-        </div>
-    </form>
-</p>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0 title">Parked Vehicles</h1>
+    </div>
 
 
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.VehicleType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LicensePlate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Manufacturer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Model)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfWheels)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CheckInTime)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.VehicleType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LicensePlate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Color)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Manufacturer)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Model)
+                </th>
+                <th class="text-center">
+                    @Html.DisplayNameFor(model => model.NumberOfWheels)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CheckInTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CheckOutTime)
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -84,50 +76,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CheckInTime)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">View Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Check Out</a>
+            <td class="text-end">
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">Edit <i class="bi bi-pencil"></i></a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1">Details <i class="bi bi-info-circle"></i></a>
+                <a asp-action="Receipt" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success" onclick="return confirm('Are you sure you want to check out this vehicle?');">CheckOut <i class="bi bi-receipt"></i></a>
+            </td>
 
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.VehicleType)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LicensePlate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Color)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Manufacturer)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Model)
-                    </td>
-                    <td class="text-center">
-                        @Html.DisplayFor(modelItem => item.NumberOfWheels)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CheckInTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CheckOutTime)
-                    </td>
-                    <td class="text-end">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">Edit <i class="bi bi-pencil"></i></a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1">Details <i class="bi bi-info-circle"></i></a>
-                        <a asp-action="Receipt" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success" onclick="return confirm('Are you sure you want to check out this vehicle?');">CheckOut <i class="bi bi-receipt"></i></a>
-
-                    </td>
-                </tr>
-            }
-        </tbody>
+    }
+    </tbody>
     </table>
 </div>
 @section Scripts {
