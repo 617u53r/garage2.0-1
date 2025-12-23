@@ -42,3 +42,28 @@ html {
     color: #194a7a;
     margin-bottom: 20px;
 }
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url('/garage.png') center/cover no-repeat;
+}
+
+.hero-section .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+.hero-section .content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 900px;
+    padding: 0 15px;
+    color: #fff;
+}

@@ -20,16 +20,29 @@ namespace Garage_2.Controllers
         }
 
 
+		public async Task<IActionResult> Home() { 
+			return View();
+        }
+        public async Task<IActionResult> Index(string? licensePlate)
+		{
+			var vehicles = _context.ParkedVehicle
+				.Where(v => v.CheckOutTime == null);
 
-		// GET: ParkedVehicles
-		public async Task<IActionResult> Index()
-        {
-			//return View(await _context.ParkedVehicle.ToListAsync());
-			return View(await _context.ParkedVehicle.Where(v => v.CheckOutTime == null).ToListAsync());
+			if (!string.IsNullOrWhiteSpace(licensePlate))
+			{
+				licensePlate = licensePlate.Trim().ToUpper();
+
+				vehicles = vehicles.Where(v =>
+					v.LicensePlate.Contains(licensePlate));
+			}
+
+			return View(await vehicles.ToListAsync());
 		}
 
-        // GET: ParkedVehicles/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+
+		// GET: ParkedVehicles/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -56,18 +69,23 @@ namespace Garage_2.Controllers
 
             var vehicle = await _context.ParkedVehicle
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (vehicle == null)
             {
                 return NotFound();
             }
-            var checkOutTime = DateTime.Now; // set at checkout
-            vehicle.CheckOutTime = checkOutTime;
-            // Calculate total parked time
-            var totalTime = checkOutTime - vehicle.CheckInTime;
 
-            // Round total hours to nearest half-hour
-            var totalHours = totalTime.TotalHours;
-            var roundedHours = Math.Round(totalHours * 2, MidpointRounding.AwayFromZero) / 2; // nearest 0.5 hr
+			if (vehicle.CheckOutTime == null) 
+				return NotFound();
+
+			//var checkOutTime = DateTime.Now; // set at checkout
+			// vehicle.CheckOutTime = checkOutTime;
+			// Calculate total parked time
+			var totalTime = vehicle.CheckOutTime.Value - vehicle.CheckInTime;
+			// Round total hours to nearest half-hour
+			var totalHours = totalTime.TotalHours;
+            // New (rounds up to next half-hour)
+            var roundedHours = Math.Ceiling(totalHours * 2) / 2;
 
             // Calculate price based on rounded hours
             var price = CalculatePriceFromHours(roundedHours);
@@ -81,14 +99,14 @@ namespace Garage_2.Controllers
                 Model = vehicle.Model,
                 NumberOfWheels = vehicle.NumberOfWheels,
                 CheckInTime = vehicle.CheckInTime,
-                CheckOutTime = checkOutTime,
+                CheckOutTime = vehicle.CheckOutTime.Value,
                 TotalParkedTime = TimeSpan.FromHours(roundedHours),
                 Price = price
             };
 
             // REMOVE after checkout
-            _context.ParkedVehicle.Remove(vehicle);
-            await _context.SaveChangesAsync();
+           // _context.ParkedVehicle.Remove(vehicle);
+          //  await _context.SaveChangesAsync();
 
             return View(vm);
         }
@@ -288,8 +306,7 @@ namespace Garage_2.Controllers
 
 			await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Vehicle {parkedVehicle.LicensePlate} checked out successfully.";
-            return RedirectToAction(nameof(Index));
+            return View(vm);
 
         }
 
@@ -313,14 +330,6 @@ namespace Garage_2.Controllers
 
 			return View(await vehicles.ToListAsync());
 		}
-
-
-
-
-
-
-
-
 
 	}
 }

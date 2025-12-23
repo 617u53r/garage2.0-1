@@ -23,45 +23,49 @@ namespace Garage_2.Migrations
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Garage_2.Models.ParkedVehicle", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CheckInTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CheckInTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("CheckOutTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("CheckOutTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Color")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("LicensePlate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LicensePlate")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Manufacturer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Manufacturer")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Model")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("NumberOfWheels")
-                        .HasColumnType("int");
+                b.Property<int>("NumberOfWheels")
+                    .HasColumnType("int");
 
-                    b.Property<int>("VehicleType")
-                        .HasColumnType("int");
+                b.Property<int>("VehicleType")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("ParkedVehicle");
-                });
+                b.ToTable("ParkedVehicle");
+            });
 #pragma warning restore 612, 618
         }
     }
