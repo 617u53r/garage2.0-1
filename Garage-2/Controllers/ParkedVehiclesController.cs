@@ -20,29 +20,30 @@ namespace Garage_2.Controllers
         }
 
 
-		public async Task<IActionResult> Home() { 
-			return View();
+        public async Task<IActionResult> Home()
+        {
+            return View();
         }
         public async Task<IActionResult> Index(string? licensePlate)
-		{
-			var vehicles = _context.ParkedVehicle
-				.Where(v => v.CheckOutTime == null);
+        {
+            var vehicles = _context.ParkedVehicle
+                .Where(v => v.CheckOutTime == null);
 
-			if (!string.IsNullOrWhiteSpace(licensePlate))
-			{
-				licensePlate = licensePlate.Trim().ToUpper();
+            if (!string.IsNullOrWhiteSpace(licensePlate))
+            {
+                licensePlate = licensePlate.Trim().ToUpper();
 
-				vehicles = vehicles.Where(v =>
-					v.LicensePlate.Contains(licensePlate));
-			}
+                vehicles = vehicles.Where(v =>
+                    v.LicensePlate.Contains(licensePlate));
+            }
 
-			return View(await vehicles.ToListAsync());
-		}
+            return View(await vehicles.ToListAsync());
+        }
 
 
 
-		// GET: ParkedVehicles/Details/5
-		public async Task<IActionResult> Details(int? id)
+        // GET: ParkedVehicles/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -75,15 +76,15 @@ namespace Garage_2.Controllers
                 return NotFound();
             }
 
-			if (vehicle.CheckOutTime == null) 
-				return NotFound();
+            if (vehicle.CheckOutTime == null)
+                return NotFound();
 
-			//var checkOutTime = DateTime.Now; // set at checkout
-			// vehicle.CheckOutTime = checkOutTime;
-			// Calculate total parked time
-			var totalTime = vehicle.CheckOutTime.Value - vehicle.CheckInTime;
-			// Round total hours to nearest half-hour
-			var totalHours = totalTime.TotalHours;
+            //var checkOutTime = DateTime.Now; // set at checkout
+            // vehicle.CheckOutTime = checkOutTime;
+            // Calculate total parked time
+            var totalTime = vehicle.CheckOutTime.Value - vehicle.CheckInTime;
+            // Round total hours to nearest half-hour
+            var totalHours = totalTime.TotalHours;
             // New (rounds up to next half-hour)
             var roundedHours = Math.Ceiling(totalHours * 2) / 2;
 
@@ -105,8 +106,8 @@ namespace Garage_2.Controllers
             };
 
             // REMOVE after checkout
-           // _context.ParkedVehicle.Remove(vehicle);
-          //  await _context.SaveChangesAsync();
+            // _context.ParkedVehicle.Remove(vehicle);
+            //  await _context.SaveChangesAsync();
 
             return View(vm);
         }
@@ -130,7 +131,7 @@ namespace Garage_2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
+
         public async Task<IActionResult> Create(ParkedVehicleCreateVm vm)
         {
             if (!ModelState.IsValid)
@@ -138,7 +139,7 @@ namespace Garage_2.Controllers
 
             var reg = vm.RegNr.Trim().ToUpperInvariant();
 
-            if (await _context.ParkedVehicle.AnyAsync(v => v.LicensePlate == reg))
+            if (await _context.ParkedVehicle.AnyAsync(v => v.LicensePlate == reg && v.CheckOutTime == null))
             {
                 ModelState.AddModelError(nameof(vm.RegNr), "Registration number is already used.");
                 return View(vm);
@@ -152,7 +153,7 @@ namespace Garage_2.Controllers
                 Manufacturer = vm.Brand.Trim(),
                 Model = vm.Model.Trim(),
                 NumberOfWheels = vm.Wheels,
-                CheckInTime = DateTime.Now, 
+                CheckInTime = DateTime.Now,
                 CheckOutTime = null
             };
 
@@ -182,154 +183,160 @@ namespace Garage_2.Controllers
             return View(parkedVehicle);
         }
 
-		// POST: ParkedVehicles/Edit/5
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,LicensePlate,Color,Manufacturer,Model,NumberOfWheels")] ParkedVehicle parkedVehicle)
-		{
-			if (id != parkedVehicle.Id)
-			{
-				return NotFound();
-			}
+        // POST: ParkedVehicles/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,LicensePlate,Color,Manufacturer,Model,NumberOfWheels")] ParkedVehicle parkedVehicle)
+        {
+            if (id != parkedVehicle.Id)
+            {
+                return NotFound();
+            }
 
-			// Retrieve the existing vehicle from the database
-			var dbVehicle = await _context.ParkedVehicle.FindAsync(id);
+            // Retrieve the existing vehicle from the database
+            var dbVehicle = await _context.ParkedVehicle.FindAsync(id);
 
-			if (dbVehicle == null)
-				return NotFound();
+            if (dbVehicle == null)
+                return NotFound();
 
-			// Does the licence plate already exist on another vehicle?
-			bool licenseExists = await _context.ParkedVehicle.AnyAsync(v => v.LicensePlate == parkedVehicle.LicensePlate && v.Id != parkedVehicle.Id);
+            //License plate must be unique only among actively parked vehicles. Historical parking records may share the same registration number.
+            bool licenseExists = await _context.ParkedVehicle.AnyAsync(v =>
+                v.LicensePlate == parkedVehicle.LicensePlate &&
+                v.CheckOutTime == null &&
+                v.Id != parkedVehicle.Id);
 
-			if (licenseExists)
-			{
-				// set the model state to invalid
-				ModelState.AddModelError(nameof(ParkedVehicle.LicensePlate), "A vehicle with this license plate already exists.");
-			}
+            if (licenseExists)
+            {
+                ModelState.AddModelError(
+                    nameof(ParkedVehicle.LicensePlate),
+                    "A vehicle with this license plate is currently parked."
+                );
+            }
 
-			if (!ModelState.IsValid)
-			{
-				return View(parkedVehicle);
-			}
+            if (!ModelState.IsValid)
+            {
+                return View(parkedVehicle);
+            }
 
-			try
-			{
-				// Update all fields except CheckInTime and CheckOutTime
-				dbVehicle.VehicleType = parkedVehicle.VehicleType;
-				dbVehicle.LicensePlate = parkedVehicle.LicensePlate;
-				dbVehicle.Color = parkedVehicle.Color;
-				dbVehicle.Manufacturer = parkedVehicle.Manufacturer;
-				dbVehicle.Model = parkedVehicle.Model;
-				dbVehicle.NumberOfWheels = parkedVehicle.NumberOfWheels;
-				await _context.SaveChangesAsync();
-				TempData["Success"] = "Vehicle was successfully updated.";
 
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!ParkedVehicleExists(parkedVehicle.Id))
-				{
-					return NotFound();
-				}
-				throw;
-			}
+            try
+            {
+                // Update all fields except CheckInTime and CheckOutTime
+                dbVehicle.VehicleType = parkedVehicle.VehicleType;
+                dbVehicle.LicensePlate = parkedVehicle.LicensePlate;
+                dbVehicle.Color = parkedVehicle.Color;
+                dbVehicle.Manufacturer = parkedVehicle.Manufacturer;
+                dbVehicle.Model = parkedVehicle.Model;
+                dbVehicle.NumberOfWheels = parkedVehicle.NumberOfWheels;
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Vehicle was successfully updated.";
+
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ParkedVehicleExists(parkedVehicle.Id))
+                {
+                    return NotFound();
+                }
+                throw;
+            }
             TempData["Success"] = $"Vehicle {parkedVehicle.LicensePlate} edited successfully.";
             return RedirectToAction(nameof(Index));
         }
 
-		// GET: ParkedVehicles/Delete/5
-		// GET: ParkedVehicles/Delete/5
-		public async Task<IActionResult> Delete(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+        // GET: ParkedVehicles/Delete/5
+        // GET: ParkedVehicles/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-			var parkedVehicle = await _context.ParkedVehicle
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (parkedVehicle == null)
-			{
-				return NotFound();
-			}
-			var vm = new CheckOutViewModel
-			{
-				Vehicle = parkedVehicle
-			};
+            var parkedVehicle = await _context.ParkedVehicle
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (parkedVehicle == null)
+            {
+                return NotFound();
+            }
+            var vm = new CheckOutViewModel
+            {
+                Vehicle = parkedVehicle
+            };
 
-			return View(vm);
-		}
+            return View(vm);
+        }
 
-		// POST: ParkedVehicles/Delete/5
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int id)
-		{
-			var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
+        // POST: ParkedVehicles/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
 
-			if (parkedVehicle == null)
-				return NotFound();
-
-
-			var vm = new CheckOutViewModel
-			{
-				Vehicle = parkedVehicle
-			};
+            if (parkedVehicle == null)
+                return NotFound();
 
 
-			// check if the vehicle is already checked out
-			if (parkedVehicle.CheckOutTime != null)
-			{
-				ModelState.AddModelError("", "Vehicle is already checked out.");
-				return View(vm);
-			}
-
-			// set the CheckOutTime to local time
-			parkedVehicle.CheckOutTime = DateTime.Now;
-
-			var duration = parkedVehicle.CheckOutTime.Value - parkedVehicle.CheckInTime;
-
-			int h = duration.Hours;
-			int m = duration.Minutes;
-
-			if (h > 0)
-			{
-				vm.Message = $"Vehicle checked out. Duration: {duration.Hours} hours and {duration.Minutes} minutes.";
-			}
-			else
-			{
-				vm.Message = $"Vehicle checked out. Duration: {duration.Minutes} minutes.";
-			}
+            var vm = new CheckOutViewModel
+            {
+                Vehicle = parkedVehicle
+            };
 
 
-			await _context.SaveChangesAsync();
+            // check if the vehicle is already checked out
+            if (parkedVehicle.CheckOutTime != null)
+            {
+                ModelState.AddModelError("", "Vehicle is already checked out.");
+                return View(vm);
+            }
+
+            // set the CheckOutTime to local time
+            parkedVehicle.CheckOutTime = DateTime.Now;
+
+            var duration = parkedVehicle.CheckOutTime.Value - parkedVehicle.CheckInTime;
+
+            int h = duration.Hours;
+            int m = duration.Minutes;
+
+            if (h > 0)
+            {
+                vm.Message = $"Vehicle checked out. Duration: {duration.Hours} hours and {duration.Minutes} minutes.";
+            }
+            else
+            {
+                vm.Message = $"Vehicle checked out. Duration: {duration.Minutes} minutes.";
+            }
+
+
+            await _context.SaveChangesAsync();
 
             return View(vm);
 
         }
 
 
-		private bool ParkedVehicleExists(int id)
+        private bool ParkedVehicleExists(int id)
         {
             return _context.ParkedVehicle.Any(e => e.Id == id);
         }
 
 
 
-		public async Task<IActionResult> Search(string? licensePlate)
-		{
-			var vehicles = _context.ParkedVehicle.AsQueryable();
+        public async Task<IActionResult> Search(string? licensePlate)
+        {
+            var vehicles = _context.ParkedVehicle.AsQueryable();
 
-			if (!string.IsNullOrWhiteSpace(licensePlate))
-			{
-				vehicles = vehicles.Where(v =>
-					v.LicensePlate.Contains(licensePlate));
-			}
+            if (!string.IsNullOrWhiteSpace(licensePlate))
+            {
+                vehicles = vehicles.Where(v =>
+                    v.LicensePlate.Contains(licensePlate));
+            }
 
-			return View(await vehicles.ToListAsync());
-		}
+            return View(await vehicles.ToListAsync());
+        }
 
-	}
+    }
 }
