@@ -24,7 +24,7 @@ public class ParkedVehicleCreateVm
     [StringLength(50)]
     public string Model { get; set; } = "";
 
-    [Range(0, 18, ErrorMessage = "Number of weels must be between 0 and 18.")]
+    [Range(1, 18, ErrorMessage = "Number of weels must be between 1 and 18.")]
     public int Wheels { get; set; }
 
 }
