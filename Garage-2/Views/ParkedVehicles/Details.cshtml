@@ -3,8 +3,7 @@
     ViewData["Title"] = "Vehicle Details";
 }
 
-<div class="container mt-4">
-    <h1 class="mb-4 title">Vehicle Details</h1>
+<h1 class="mb-4 title">Vehicle Details</h1>
 
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -68,11 +67,14 @@
                 var totalTime = checkOutTime - Model.CheckInTime;
 
                 var totalHours = totalTime.TotalHours;
-                var roundedHours = Math.Round(totalHours * 2, MidpointRounding.AwayFromZero) / 2;
+
+                // Round up to nearest 0.5 hour
+                var roundedHours = Math.Ceiling(totalHours * 2) / 2;
 
                 decimal ratePerHour = 20m;
                 var estimatedPrice = (decimal)roundedHours * ratePerHour;
             }
+
             <div class="alert alert-success mt-4">
                 <h5 class="mb-2">Current parking cost</h5>
                 <p class="mb-1">
@@ -82,7 +84,6 @@
                     <strong>Estimated price:</strong> @estimatedPrice kr
                 </p>
             </div>
-        </div>
 
 
         <div class="card-footer d-flex justify-content-between">

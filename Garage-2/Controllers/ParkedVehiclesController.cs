@@ -84,7 +84,8 @@ namespace Garage_2.Controllers
 			var totalTime = vehicle.CheckOutTime.Value - vehicle.CheckInTime;
 			// Round total hours to nearest half-hour
 			var totalHours = totalTime.TotalHours;
-            var roundedHours = Math.Round(totalHours * 2, MidpointRounding.AwayFromZero) / 2; // nearest 0.5 hr
+            // New (rounds up to next half-hour)
+            var roundedHours = Math.Ceiling(totalHours * 2) / 2;
 
             // Calculate price based on rounded hours
             var price = CalculatePriceFromHours(roundedHours);
@@ -329,14 +330,6 @@ namespace Garage_2.Controllers
 
 			return View(await vehicles.ToListAsync());
 		}
-
-
-
-
-
-
-
-
 
 	}
 }
